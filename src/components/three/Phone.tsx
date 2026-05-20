@@ -1,4 +1,4 @@
-import { useRef, forwardRef, useState, useEffect } from 'react';
+import { useRef, forwardRef, useState, useEffect, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox, useTexture, Circle, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -25,6 +25,36 @@ const getRoundedRectShape = (width: number, height: number, radius: number) => {
   shape.lineTo(x + radius, y);
   shape.quadraticCurveTo(x, y, x, y + radius);
   return shape;
+};
+
+const adjustTextureRepeat = (
+  texture: THREE.Texture,
+  planeWidth: number,
+  planeHeight: number,
+  rotation: number,
+  zoomFactor: number = 0.55
+) => {
+  if (!texture.image) return;
+  const img = texture.image as any;
+  const w_t = img.width;
+  const h_t = img.height;
+  if (!w_t || !h_t) return;
+
+  const cos = Math.abs(Math.cos(rotation));
+  const sin = Math.abs(Math.sin(rotation));
+
+  const w_box = planeWidth * cos + planeHeight * sin;
+  const h_box = planeWidth * sin + planeHeight * cos;
+
+  const s_w = w_box / w_t;
+  const s_h = h_box / h_t;
+  const s = Math.max(s_w, s_h);
+
+  const baseRepX = w_box / (s * w_t);
+  const baseRepY = h_box / (s * h_t);
+
+  texture.repeat.set(baseRepX * zoomFactor, baseRepY * zoomFactor);
+  texture.center.set(0.5, 0.5);
 };
 
 const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollProgress, mode = 'hero', rotationY }, ref) => {
@@ -66,25 +96,34 @@ const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollPr
   const baseUrl = import.meta.env.BASE_URL;
 
   // Load high-quality textures locally
-  const mobileWallpaperTexture = useTexture(`${baseUrl}images/MobileWallpaper.png`);
-  const galaxyTexture = useTexture(`${baseUrl}images/cosmic-wallpaper.png`);
-  const canyonTexture = useTexture(`${baseUrl}images/camera-canyon.png`);
+  const baseGalaxyTexture = useTexture(`${baseUrl}images/MobileWallpaper.png`);
+  const baseCanyonTexture = useTexture(`${baseUrl}images/camera-canyon.png`);
   const glowTexture = useTexture(`${baseUrl}images/vanguard-camera.png`);
 
-  // ── MobileWallpaper — Hero screen wallpaper ──────────────────────────────────
-  // Phone screen shape: 1.92 wide × 3.80 tall (ratio ≈ 0.505 landscape)
-  // We fit the image to fill the full screen without distortion.
-  mobileWallpaperTexture.wrapS = mobileWallpaperTexture.wrapT = THREE.ClampToEdgeWrapping;
-  mobileWallpaperTexture.colorSpace = THREE.SRGBColorSpace;
-  mobileWallpaperTexture.center.set(0.5, 0.5);
-  // Scale repeat so the image fills the screen proportionally (cover behaviour)
-  mobileWallpaperTexture.repeat.set(1, 1);
-  mobileWallpaperTexture.needsUpdate = true;
+  // Clone textures to ensure each Phone component instance has independent mapping state
+  const galaxyTexture = useMemo(() => {
+    const cloned = baseGalaxyTexture.clone();
+    cloned.wrapS = cloned.wrapT = THREE.ClampToEdgeWrapping;
+    cloned.colorSpace = THREE.SRGBColorSpace;
+    cloned.center.set(0.5, 0.5);
+    cloned.needsUpdate = true;
+    return cloned;
+  }, [baseGalaxyTexture]);
 
-  // ── Galaxy / rotator textures ─────────────────────────────────────────────────
-  galaxyTexture.wrapS = galaxyTexture.wrapT = THREE.ClampToEdgeWrapping;
-  galaxyTexture.colorSpace = THREE.SRGBColorSpace;
-  galaxyTexture.center.set(0.5, 0.5);
+  const canyonTexture = useMemo(() => {
+    const cloned = baseCanyonTexture.clone();
+    cloned.wrapS = cloned.wrapT = THREE.ClampToEdgeWrapping;
+    cloned.colorSpace = THREE.SRGBColorSpace;
+    cloned.center.set(0.5, 0.5);
+    cloned.needsUpdate = true;
+    return cloned;
+  }, [baseCanyonTexture]);
+
+  glowTexture.wrapS = glowTexture.wrapT = THREE.ClampToEdgeWrapping;
+  glowTexture.colorSpace = THREE.SRGBColorSpace;
+
+  // Apply centered cover crop with extra zoom-in (0.55 repeat factor)
+  adjustTextureRepeat(galaxyTexture, 1.92, 3.80, galaxyTexture.rotation, 0.55);
 
   canyonTexture.wrapS = canyonTexture.wrapT = THREE.ClampToEdgeWrapping;
   canyonTexture.colorSpace = THREE.SRGBColorSpace;
@@ -126,6 +165,7 @@ const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollPr
         groupRef.current.rotation.y = state.clock.elapsedTime * 0.2;
       }
       groupRef.current.scale.setScalar(0.75);
+      adjustTextureRepeat(galaxyTexture, 1.92, 3.80, galaxyTexture.rotation, 0.55);
       return;
     }
 
@@ -182,6 +222,7 @@ const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollPr
       // Rotate textures to keep them upright
       galaxyTexture.rotation = THREE.MathUtils.lerp(galaxyTexture.rotation, -targetZ, 0.06);
       canyonTexture.rotation = THREE.MathUtils.lerp(canyonTexture.rotation, -targetZ, 0.06);
+      adjustTextureRepeat(galaxyTexture, 1.92, 3.80, galaxyTexture.rotation, 0.55);
     }
 
     // Glow Opacity Control

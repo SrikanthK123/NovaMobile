@@ -44,7 +44,7 @@ export default function DragReveal() {
   }, []);
 
   // Drag interaction handler
-  const handlePointerDown = (event: globalThis.PointerEvent) => {
+  const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
     isDragging.current = true;
     document.body.style.userSelect = 'none';

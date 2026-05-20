@@ -80,7 +80,7 @@ const CameraCard = React.memo(() => (
     {/* Shutter Row */}
     <div className="py-4 px-6 bg-black flex justify-between items-center">
       {/* Gallery preview */}
-      <div className="w-8 h-8 rounded-full border border-white/20 bg-cover bg-center overflow-hidden bg-[#111]" style={{ backgroundImage: `url('${import.meta.env.BASE_URL}images/cosmic-wallpaper.png')` }} />
+      <div className="w-8 h-8 rounded-full border border-white/20 bg-cover bg-center overflow-hidden bg-[#111]" style={{ backgroundImage: `url('${import.meta.env.BASE_URL}images/MobileWallpaper.png')` }} />
       {/* Shutter btn */}
       <div className="w-12 h-12 rounded-full border-[3px] border-white flex items-center justify-center p-[2px]">
         <div className="w-full h-full bg-white rounded-full hover:scale-95 transition-transform" />

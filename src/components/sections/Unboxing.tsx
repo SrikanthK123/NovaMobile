@@ -280,11 +280,20 @@ export default function Unboxing({ active = false, onComplete }: UnboxingProps) 
               {/* Emissive Screen Wallpaper Content */}
               <div
                 ref={phoneScreenRef}
-                style={{
-                  ...(isMobile ? {} : { backgroundImage: `url('${import.meta.env.BASE_URL}images/cosmic-wallpaper.png')` }),
-                }}
-                className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
+                className="absolute inset-0 transition-opacity duration-700"
               >
+                {/* Background wallpaper zoomed */}
+                <div
+                  className="absolute bg-cover bg-center"
+                  style={{
+                    ...(isMobile ? {} : { backgroundImage: `url('${import.meta.env.BASE_URL}images/MobileWallpaper.png')` }),
+                    top: '-32%',
+                    bottom: '-32%',
+                    left: '-32%',
+                    right: '-32%',
+                  }}
+                />
+
                 {/* Glowing Overlay */}
                 <div className="absolute inset-0 bg-brand-cobalt/20 mix-blend-color-dodge animate-pulse" />
                 <div className="absolute inset-0 bg-black/30" />

@@ -274,6 +274,13 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
         ease:         'power2.out',
       }, 0.65);
 
+      // Fade out the static wallpaper when the video fades in
+      tl.to(wallRef.current, {
+        opacity:      0,
+        duration:     0.25,
+        ease:         'power2.out',
+      }, 0.65);
+
       // Fade in the video overlay so it shows instead of the image when zoomed
       tl.to(videoOverlayRef.current, {
         opacity:      1,
@@ -401,11 +408,15 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
               <>
                 <div
                   ref={wallRef}
-                  className="absolute inset-0 bg-cover bg-center"
+                  className="absolute bg-cover bg-center"
                   style={{
-                    backgroundImage: `url('${baseUrl}images/cosmic-wallpaper.png')`,
+                    backgroundImage: `url('${wallpaperUrl}')`,
                     transformOrigin: 'center center',
-                    willChange: 'transform',
+                    willChange: 'transform, opacity',
+                    top: '-32%',
+                    bottom: '-32%',
+                    left: '-32%',
+                    right: '-32%',
                   }}
                 />
 
