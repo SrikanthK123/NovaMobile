@@ -403,51 +403,47 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
               willChange:   'transform, border-radius',
             }}
           >
-            {/* Galaxy wallpaper (hidden on mobile to avoid duplicate screenshots) */}
-            {!isMobile && (
-              <>
-                <div
-                  ref={wallRef}
-                  className="absolute bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url('${wallpaperUrl}')`,
-                    transformOrigin: 'center center',
-                    willChange: 'transform, opacity',
-                    top: '-32%',
-                    bottom: '-32%',
-                    left: '-32%',
-                    right: '-32%',
-                  }}
-                />
+            {/* Galaxy wallpaper (rendered on all devices) */}
+            <div
+              ref={wallRef}
+              className="absolute bg-cover bg-center"
+              style={{
+                backgroundImage: `url('${wallpaperUrl}')`,
+                transformOrigin: 'center center',
+                willChange: 'transform, opacity',
+                top: '-32%',
+                bottom: '-32%',
+                left: '-32%',
+                right: '-32%',
+              }}
+            />
 
-                {/* Galaxy wallpaper video */}
-                <video
-                  ref={videoRef}
-                  src={`${baseUrl}images/WallpaperVideo.mp4`}
-                  className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                  style={{
-                    opacity: 0,
-                    transformOrigin: 'center center',
-                    willChange: 'transform, opacity',
-                  }}
-                  muted
-                  loop
-                  playsInline
-                />
+            {/* Galaxy wallpaper video */}
+            <video
+              ref={videoRef}
+              src={`${baseUrl}images/WallpaperVideo.mp4`}
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              style={{
+                opacity: 0,
+                transformOrigin: 'center center',
+                willChange: 'transform, opacity',
+              }}
+              muted
+              loop
+              playsInline
+            />
 
-                {/* Galaxy wallpaper video overlay to soften brightness */}
-                <div
-                  ref={videoOverlayRef}
-                  className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
-                  style={{
-                    opacity: 0,
-                    background: 'linear-gradient(to bottom, rgba(5, 5, 8, 0.45) 0%, rgba(5, 5, 8, 0.25) 50%, rgba(5, 5, 8, 0.45) 100%), radial-gradient(circle, rgba(5, 5, 8, 0.2) 0%, rgba(5, 5, 8, 0.85) 100%)',
-                    transformOrigin: 'center center',
-                    willChange: 'transform, opacity',
-                  }}
-                />
-              </>
-            )}
+            {/* Galaxy wallpaper video overlay to soften brightness */}
+            <div
+              ref={videoOverlayRef}
+              className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
+              style={{
+                opacity: 0,
+                background: 'linear-gradient(to bottom, rgba(5, 5, 8, 0.45) 0%, rgba(5, 5, 8, 0.25) 50%, rgba(5, 5, 8, 0.45) 100%), radial-gradient(circle, rgba(5, 5, 8, 0.2) 0%, rgba(5, 5, 8, 0.85) 100%)',
+                transformOrigin: 'center center',
+                willChange: 'transform, opacity',
+              }}
+            />
 
             {/* Lock screen UI */}
             <div
