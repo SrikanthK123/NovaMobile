@@ -23,6 +23,7 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
 
   const [currentTime, setCurrentTime] = useState('10:08');
   const [currentDate, setCurrentDate] = useState('TUESDAY, MAY 18');
+  const baseUrl = import.meta.env.BASE_URL;
 
   useEffect(() => {
     const updateTime = () => {
@@ -49,7 +50,7 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
     return () => clearInterval(interval);
   }, []);
 
-  const wallpaperUrl = '/images/MobileWallpaper.png';
+  const wallpaperUrl = `${baseUrl}images/MobileWallpaper.png`;
 
   // Handle entry animation of interactive tags/buttons when active changes to true
   useEffect(() => {
@@ -401,7 +402,7 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
             {/* Galaxy wallpaper video */}
             <video
               ref={videoRef}
-              src="/images/WallpaperVideo.mp4"
+              src={`${baseUrl}images/WallpaperVideo.mp4`}
               className="absolute inset-0 w-full h-full object-cover pointer-events-none"
               style={{
                 opacity: 0,

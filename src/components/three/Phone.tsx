@@ -63,11 +63,13 @@ const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollPr
     return () => clearInterval(interval);
   }, []);
   
+  const baseUrl = import.meta.env.BASE_URL;
+
   // Load high-quality textures locally
-  const mobileWallpaperTexture = useTexture('/images/MobileWallpaper.png');
-  const galaxyTexture = useTexture('/images/cosmic-wallpaper.png');
-  const canyonTexture = useTexture('/images/camera-canyon.png');
-  const glowTexture = useTexture('/images/vanguard-camera.png');
+  const mobileWallpaperTexture = useTexture(`${baseUrl}images/MobileWallpaper.png`);
+  const galaxyTexture = useTexture(`${baseUrl}images/cosmic-wallpaper.png`);
+  const canyonTexture = useTexture(`${baseUrl}images/camera-canyon.png`);
+  const glowTexture = useTexture(`${baseUrl}images/vanguard-camera.png`);
 
   // ── MobileWallpaper — Hero screen wallpaper ──────────────────────────────────
   // Phone screen shape: 1.92 wide × 3.80 tall (ratio ≈ 0.505 landscape)

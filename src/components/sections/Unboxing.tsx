@@ -273,7 +273,7 @@ export default function Unboxing({ active = false, onComplete }: UnboxingProps) 
               <div
                 ref={phoneScreenRef}
                 style={{
-                  backgroundImage: `url('/images/cosmic-wallpaper.png')`,
+                  backgroundImage: `url('${import.meta.env.BASE_URL}images/cosmic-wallpaper.png')`,
                 }}
                 className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
               >

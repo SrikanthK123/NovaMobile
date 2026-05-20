@@ -75,8 +75,10 @@ export default function DragReveal() {
     };
   }, []);
 
+  const baseUrl = import.meta.env.BASE_URL;
+
   // Shared stunning landscape photo (Starry Canyon Night)
-  const imageUrl = '/images/camera-canyon.png';
+  const imageUrl = `${baseUrl}images/camera-canyon.png`;
 
   return (
     <section
