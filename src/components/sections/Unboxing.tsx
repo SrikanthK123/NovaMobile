@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger } from '../../lib/gsap';
 
 interface UnboxingProps {
@@ -21,6 +21,14 @@ export default function Unboxing({ active = false, onComplete }: UnboxingProps) 
   const phoneRef = useRef<HTMLDivElement>(null);
   const phoneScreenRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => {
     // If not using scroll-based unboxing, wait until the intro loader completes
@@ -273,7 +281,7 @@ export default function Unboxing({ active = false, onComplete }: UnboxingProps) 
               <div
                 ref={phoneScreenRef}
                 style={{
-                  backgroundImage: `url('${import.meta.env.BASE_URL}images/cosmic-wallpaper.png')`,
+                  ...(isMobile ? {} : { backgroundImage: `url('${import.meta.env.BASE_URL}images/cosmic-wallpaper.png')` }),
                 }}
                 className="absolute inset-0 bg-cover bg-center transition-opacity duration-700"
               >

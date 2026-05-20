@@ -44,13 +44,17 @@ export default function DragReveal() {
   }, []);
 
   // Drag interaction handler
-  const handlePointerDown = () => {
+  const handlePointerDown = (event: globalThis.PointerEvent) => {
+    event.preventDefault();
     isDragging.current = true;
     document.body.style.userSelect = 'none';
+    if (trackRef.current) {
+      trackRef.current.setPointerCapture(event.pointerId);
+    }
   };
 
   useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
+    const handlePointerMove = (e: globalThis.PointerEvent) => {
       if (!isDragging.current || !trackRef.current) return;
 
       const rect = trackRef.current.getBoundingClientRect();
@@ -120,6 +124,7 @@ export default function DragReveal() {
         <div
           ref={trackRef}
           className="relative w-full aspect-[16/10] md:aspect-[16/9] max-h-[550px] bg-[#07070d] border border-white/10 rounded-3xl overflow-hidden cursor-ew-resize phone-rotator-zone shadow-[0_30px_90px_rgba(0,0,0,0.8)]"
+          style={{ touchAction: 'none' }}
           onPointerDown={handlePointerDown}
         >
           {/* 1. RIGHT SIDE: NOVA IMAGE (Crisp, High Vibrance, Sharp) */}

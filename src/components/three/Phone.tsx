@@ -226,7 +226,6 @@ const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollPr
           <mesh position={[0, 0, -0.111]} rotation={[0, Math.PI, 0]} renderOrder={0}>
             <planeGeometry args={[2.1, 4.1]} />
             <meshStandardMaterial 
-              map={galaxyTexture}
               color={color} 
               roughness={0.15} 
               metalness={0.4} 
@@ -396,19 +395,7 @@ const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollPr
             </mesh>
           </group>
 
-          {/* === NOVA LOGO ON BACK === */}
-          <group position={[0, -1.35, -0.113]} rotation={[0, Math.PI, 0]}>
-             <Text
-              fontSize={0.18}
-              color={color === "#ffffff" ? "#888888" : "#ffffff"}
-              anchorX="center"
-              anchorY="middle"
-              letterSpacing={0.25}
-              fillOpacity={0.65}
-            >
-              NOVA
-            </Text>
-          </group>
+          {/* === BACKSIDE PLAIN FINISH (no logo/text on rear) === */}
         </group>
       </group>
     </group>

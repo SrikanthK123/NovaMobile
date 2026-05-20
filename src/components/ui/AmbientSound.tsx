@@ -7,6 +7,7 @@ import { Volume2, VolumeX } from 'lucide-react';
 export default function AmbientSound() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showTooltip, setShowTooltip] = useState(true);
+  const [audioError, setAudioError] = useState(false);
   const ambientSoundRef = useRef<Howl | null>(null);
   const clickSoundRef = useRef<Howl | null>(null);
   const isPlayingRef = useRef(false);
@@ -23,9 +24,11 @@ export default function AmbientSound() {
       loop: true,
       volume: 0.15,
       html5: true, // stream large files
+      preload: true,
       onloaderror: () => console.warn('Ambient soundtrack failed to load. Operating in silent mode.'),
       onplayerror: () => {
         setIsPlaying(false);
+        setAudioError(true);
       }
     });
 
@@ -41,6 +44,14 @@ export default function AmbientSound() {
       setShowTooltip(false);
     }, 5000);
 
+    const startAmbientOnFirstInteraction = () => {
+      if (ambientSoundRef.current && !isPlayingRef.current) {
+        ambientSoundRef.current.play();
+        setIsPlaying(true);
+        setShowTooltip(false);
+      }
+    };
+
     // Global listener to register clicks and play haptic transition sound
     const handleGlobalClick = () => {
       if (clickSoundRef.current && isPlayingRef.current) {
@@ -49,10 +60,16 @@ export default function AmbientSound() {
     };
 
     window.addEventListener('click', handleGlobalClick);
+    window.addEventListener('click', startAmbientOnFirstInteraction, { once: true });
+    window.addEventListener('touchstart', startAmbientOnFirstInteraction, { once: true });
+    window.addEventListener('keydown', startAmbientOnFirstInteraction, { once: true });
 
     return () => {
       clearTimeout(tooltipTimer);
       window.removeEventListener('click', handleGlobalClick);
+      window.removeEventListener('click', startAmbientOnFirstInteraction);
+      window.removeEventListener('touchstart', startAmbientOnFirstInteraction);
+      window.removeEventListener('keydown', startAmbientOnFirstInteraction);
       if (ambientSoundRef.current) {
         ambientSoundRef.current.stop();
         ambientSoundRef.current.unload();
@@ -93,6 +110,7 @@ export default function AmbientSound() {
       <button
         onClick={toggleSound}
         className="w-11 h-11 rounded-full bg-white/5 border border-white/10 hover:border-[#1a6bff]/50 hover:bg-brand-cobalt/10 backdrop-blur-md flex items-center justify-center relative shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-300 group hover:scale-105"
+        aria-label={isPlaying ? 'Pause ambient audio' : 'Play ambient audio'}
       >
         {isPlaying ? (
           <div className="relative w-full h-full flex items-center justify-center">
@@ -111,6 +129,11 @@ export default function AmbientSound() {
         )}
       </button>
 
+      {audioError && (
+        <div className="mt-2 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-[9px] text-red-200 backdrop-blur-md">
+          Audio playback failed. Try clicking the button again or allow sound in your browser.
+        </div>
+      )}
       {/* ── CSS KEYFRAMES FOR EQUALIZER INLINED ── */}
       <style>{`
         @keyframes equalizer {
