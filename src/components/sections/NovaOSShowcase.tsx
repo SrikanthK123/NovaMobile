@@ -34,11 +34,29 @@ const FAN_CONFIG = [
 
 // ── INDIVIDUAL CARD UI COMPONENTS (REAL JSX MOCKUPS) ──
 
+// Self-contained live clock — each card owns its own timer.
+// This avoids passing time as a prop (which caused useMemo to rebuild every second
+// and broke the phone scroll animation in the desktop showcase).
+const LiveStatusTime = React.memo(() => {
+  const [t, setT] = useState(() =>
+    new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  );
+  useEffect(() => {
+    const id = setInterval(() =>
+      setT(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }))
+    , 1000);
+    return () => clearInterval(id);
+  }, []);
+  return <>{t}</>;
+});
+LiveStatusTime.displayName = 'LiveStatusTime';
+
+
 const CameraCard = React.memo(() => (
   <div className="w-full h-full bg-[#000008] text-white flex flex-col font-sans select-none overflow-hidden relative">
     {/* status bar */}
     <div className="px-4 pt-4 pb-2 flex justify-between items-center text-[9px] text-white/50 border-b border-white/[0.05]">
-      <span>09:41 AM</span>
+      <span><LiveStatusTime /></span>
       <div className="flex items-center gap-1.5">
         <span>5G</span>
         <span className="w-3.5 h-2 border border-white/40 rounded-[2px] flex items-center p-[1px]"><span className="w-full h-full bg-white rounded-[1px]"/></span>
@@ -98,7 +116,7 @@ const AICard = React.memo(() => (
   <div className="w-full h-full bg-[#050510] text-white flex flex-col font-sans select-none overflow-hidden relative">
     {/* status bar */}
     <div className="px-4 pt-4 pb-2 flex justify-between items-center text-[9px] text-white/50 border-b border-white/[0.05]">
-      <span>09:41 AM</span>
+      <span><LiveStatusTime /></span>
       <div className="flex items-center gap-1.5">
         <span>5G</span>
         <span className="w-3.5 h-2 border border-white/40 rounded-[2px] flex items-center p-[1px]"><span className="w-full h-full bg-white rounded-[1px]"/></span>
@@ -162,7 +180,7 @@ const HealthCard = React.memo(() => (
   <div className="w-full h-full bg-[#050209] text-white flex flex-col font-sans select-none overflow-hidden relative">
     {/* status bar */}
     <div className="px-4 pt-4 pb-2 flex justify-between items-center text-[9px] text-white/50 border-b border-white/[0.05]">
-      <span>09:41 AM</span>
+      <span><LiveStatusTime /></span>
       <div className="flex items-center gap-1.5">
         <span>5G</span>
         <span className="w-3.5 h-2 border border-white/40 rounded-[2px] flex items-center p-[1px]"><span className="w-full h-full bg-white rounded-[1px]"/></span>
@@ -230,7 +248,7 @@ const WalletCard = React.memo(() => (
   <div className="w-full h-full bg-[#030307] text-white flex flex-col font-sans select-none overflow-hidden relative">
     {/* status bar */}
     <div className="px-4 pt-4 pb-2 flex justify-between items-center text-[9px] text-white/50 border-b border-white/[0.05]">
-      <span>09:41 AM</span>
+      <span><LiveStatusTime /></span>
       <div className="flex items-center gap-1.5">
         <span>5G</span>
         <span className="w-3.5 h-2 border border-white/40 rounded-[2px] flex items-center p-[1px]"><span className="w-full h-full bg-white rounded-[1px]"/></span>
@@ -285,7 +303,7 @@ const MusicCard = React.memo(() => (
   <div className="w-full h-full bg-[#030107] text-white flex flex-col font-sans select-none overflow-hidden relative">
     {/* status bar */}
     <div className="px-4 pt-4 pb-2 flex justify-between items-center text-[9px] text-white/50 border-b border-white/[0.05]">
-      <span>09:41 AM</span>
+      <span><LiveStatusTime /></span>
       <span className="text-[#1a6bff] tracking-widest font-mono text-[7px]">SPATIAL</span>
     </div>
     {/* Vinyl/Nebula Disk Art */}
@@ -331,7 +349,7 @@ const MapsCard = React.memo(() => (
   <div className="w-full h-full bg-[#040508] text-white flex flex-col font-sans select-none overflow-hidden relative">
     {/* status bar */}
     <div className="px-4 pt-4 pb-2 flex justify-between items-center text-[9px] text-white/50 border-b border-white/[0.05]">
-      <span>09:41 AM</span>
+      <span><LiveStatusTime /></span>
       <div className="flex items-center gap-1.5">
         <span>5G</span>
         <span className="w-3.5 h-2 border border-white/40 rounded-[2px] flex items-center p-[1px]"><span className="w-full h-full bg-white rounded-[1px]"/></span>
@@ -507,6 +525,9 @@ export default function NovaOSShowcase() {
   const [isTablet, setIsTablet] = useState(false);
   const [activeMobileIdx, setActiveMobileIdx] = useState(0);
   const [mobileScreenIdx, setMobileScreenIdx] = useState(0);
+  const [activeCalloutIdx, setActiveCalloutIdx] = useState(-1);
+
+
 
   // Scroll bindings for desktop / tablet
   const { scrollYProgress } = useScroll({
@@ -545,9 +566,9 @@ export default function NovaOSShowcase() {
 
   // ── ACT 3 PHONE CONTAINER TRANSFORM ──
   const phoneScale = useTransform(scrollYProgress, [0.30, 0.60, 0.65], [0.95, 0.95, 1.0]);
-  const frameOpacity = useTransform(scrollYProgress, [0.60, 0.65], [0, 1]);
+  const frameOpacity = useTransform(scrollYProgress, [0.60, 0.61], [0, 1]);
   // Fade the original HealthCard UI OUT as the phone frame fades IN → prevents double-screen bleedthrough
-  const cardOriginalOpacity2 = useTransform(scrollYProgress, [0.58, 0.64], [1, 0]);
+  const cardOriginalOpacity2 = useTransform(scrollYProgress, [0.58, 0.60], [1, 0]);
 
   // Dim overlay for non-main side cards: fade IN to 55% black as cards fan out, fade OUT as they converge
   // Creates the premium "depth-of-field" effect: centre card is bright, side cards dim when spread
@@ -558,37 +579,78 @@ export default function NovaOSShowcase() {
   );
 
   // Inside phone scrolling mockup: Page scroll 65% -> 100% maps to Y offset inside phone screen
-  const desktopScrollRange = -4 * 554;
-  const tabletScrollRange = -4 * 474;
   const phoneContentY = useTransform(
     scrollYProgress,
-    [0.65, 1.0],
-    [0, isTablet ? tabletScrollRange : desktopScrollRange]
+    [
+      0.65, 0.67, // Home screen active (Screen 1)
+      0.69, 0.72, // Camera mode active (Screen 2)
+      0.74, 0.77, // AI Assistant active (Screen 3)
+      0.79, 0.82, // BioCore Health active (Screen 4)
+      0.84, 0.87, // NOVA Pay active (Screen 5)
+      0.89, 0.92, // Spatial Audio active (Screen 6)
+      0.94, 1.00  // Nova Navigate active (Screen 7)
+    ],
+    [
+      0, 0,
+      isTablet ? -474 : -554, isTablet ? -474 : -554,
+      isTablet ? -948 : -1108, isTablet ? -948 : -1108,
+      isTablet ? -1422 : -1662, isTablet ? -1422 : -1662,
+      isTablet ? -1896 : -2216, isTablet ? -1896 : -2216,
+      isTablet ? -2370 : -2770, isTablet ? -2370 : -2770,
+      isTablet ? -2844 : -3324, isTablet ? -2844 : -3324
+    ]
   );
 
   // ── ACT 3 FEATURE CALLOUT TRANSFORMS ──
-  // Callout 1 (Camera, Section 2): Left Side
-  const callout1Opacity = useTransform(scrollYProgress, [0.67, 0.70, 0.76, 0.79], [0, 1, 1, 0]);
-  const callout1X = useTransform(scrollYProgress, [0.67, 0.70, 0.76, 0.79], [-30, 0, 0, -30]);
+  // Callout 1 (Camera): Left Side
+  const callout1Opacity = useTransform(scrollYProgress, [0.0, 0.67, 0.69, 0.72, 0.74, 1.0], [0, 0, 1, 1, 0, 0]);
+  const callout1X = useTransform(scrollYProgress, [0.0, 0.67, 0.69, 0.72, 0.74, 1.0], [-30, -30, 0, 0, -30, -30]);
 
-  // Callout 2 (AI, Section 3): Right Side
-  const callout2Opacity = useTransform(scrollYProgress, [0.75, 0.78, 0.84, 0.87], [0, 1, 1, 0]);
-  const callout2X = useTransform(scrollYProgress, [0.75, 0.78, 0.84, 0.87], [30, 0, 0, 30]);
+  // Callout 2 (AI): Right Side
+  const callout2Opacity = useTransform(scrollYProgress, [0.0, 0.72, 0.74, 0.77, 0.79, 1.0], [0, 0, 1, 1, 0, 0]);
+  const callout2X = useTransform(scrollYProgress, [0.0, 0.72, 0.74, 0.77, 0.79, 1.0], [30, 30, 0, 0, 30, 30]);
 
-  // Callout 3 (Music, Section 4): Left Side
-  const callout3Opacity = useTransform(scrollYProgress, [0.83, 0.86, 0.92, 0.95], [0, 1, 1, 0]);
-  const callout3X = useTransform(scrollYProgress, [0.83, 0.86, 0.92, 0.95], [-30, 0, 0, -30]);
+  // Callout 3 (BioCore Health): Left Side
+  const callout3Opacity = useTransform(scrollYProgress, [0.0, 0.77, 0.79, 0.82, 0.84, 1.0], [0, 0, 1, 1, 0, 0]);
+  const callout3X = useTransform(scrollYProgress, [0.0, 0.77, 0.79, 0.82, 0.84, 1.0], [-30, -30, 0, 0, -30, -30]);
 
-  // Callout 4 (Pay, Section 5): Right Side
-  const callout4Opacity = useTransform(scrollYProgress, [0.91, 0.94, 0.98, 1.00], [0, 1, 1, 1]);
-  const callout4X = useTransform(scrollYProgress, [0.91, 0.94, 0.98, 1.00], [30, 0, 0, 0]);
+  // Callout 4 (Nova Pay): Right Side
+  const callout4Opacity = useTransform(scrollYProgress, [0.0, 0.82, 0.84, 0.87, 0.89, 1.0], [0, 0, 1, 1, 0, 0]);
+  const callout4X = useTransform(scrollYProgress, [0.0, 0.82, 0.84, 0.87, 0.89, 1.0], [30, 30, 0, 0, 30, 30]);
 
-  // ── PARTICLE BURST TRIGGER ──
-  // Triggers once exactly when scroll hits 62%
+  // Callout 5 (Music / Spatial Audio): Left Side
+  const callout5Opacity = useTransform(scrollYProgress, [0.0, 0.87, 0.89, 0.92, 0.94, 1.0], [0, 0, 1, 1, 0, 0]);
+  const callout5X = useTransform(scrollYProgress, [0.0, 0.87, 0.89, 0.92, 0.94, 1.0], [-30, -30, 0, 0, -30, -30]);
+
+  // Callout 6 (Nova Navigate): Right Side
+  const callout6Opacity = useTransform(scrollYProgress, [0.0, 0.92, 0.94, 0.98, 1.0], [0, 0, 1, 1, 1]);
+  const callout6X = useTransform(scrollYProgress, [0.0, 0.92, 0.94, 0.98, 1.0], [30, 30, 0, 0, 0]);
+
+  // ── PARTICLE BURST TRIGGER & DESKTOP CALLOUT SYNC ──
+  // Triggers once exactly when scroll hits 62%, and drives state-based desktop callouts
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (!isMobile) {
       if (latest >= 0.62 && latest <= 0.635) {
         particleBurstRef.current?.trigger();
+      }
+
+      // Sync activeCalloutIdx for desktop view discrete callouts
+      if (latest < 0.65) {
+        setActiveCalloutIdx(-1);
+      } else if (latest >= 0.65 && latest < 0.69) {
+        setActiveCalloutIdx(0); // Home Screen (callouts hidden)
+      } else if (latest >= 0.69 && latest < 0.74) {
+        setActiveCalloutIdx(1); // Camera
+      } else if (latest >= 0.74 && latest < 0.79) {
+        setActiveCalloutIdx(2); // AI
+      } else if (latest >= 0.79 && latest < 0.84) {
+        setActiveCalloutIdx(3); // Health
+      } else if (latest >= 0.84 && latest < 0.89) {
+        setActiveCalloutIdx(4); // Pay
+      } else if (latest >= 0.89 && latest < 0.94) {
+        setActiveCalloutIdx(5); // Music
+      } else {
+        setActiveCalloutIdx(6); // Maps / Nova Navigate
       }
     }
   });
@@ -598,9 +660,9 @@ export default function NovaOSShowcase() {
     if (!isMobile) return;
 
     // Autoplay phone mockup internal screens every 3 seconds
-    // 6 screens: 0=Home, 1=Camera, 2=AI, 3=Health, 4=Music, 5=Wallet
+    // 7 screens: 0=Home, 1=Camera, 2=AI, 3=Health, 4=Pay, 5=Music, 6=Maps
     const interval = setInterval(() => {
-      setMobileScreenIdx((prev) => (prev + 1) % 6);
+      setMobileScreenIdx((prev) => (prev + 1) % 7);
     }, 3000);
 
     return () => clearInterval(interval);
@@ -811,32 +873,39 @@ export default function NovaOSShowcase() {
             </div>
 
             {/* Simulated Frame */}
-            <div className="w-[280px] h-[520px] relative rounded-[30px] border border-white/[0.08] shadow-2xl bg-black overflow-hidden flex items-center justify-center p-2 mb-8">
-              {/* volume keys */}
-              <div className="absolute -left-[3px] top-[26%] w-[3px] h-8 bg-white/20 rounded-l" />
-              <div className="absolute -right-[3px] top-[30%] w-[3px] h-10 bg-white/20 rounded-r" />
-              <div className="absolute top-[10px] w-10 h-3 bg-black rounded-full z-50 border border-white/10" />
+            <div className="w-[282px] h-[522px] relative overflow-hidden flex items-center justify-center p-1.5 mb-8 shadow-[0_20px_50px_rgba(0,0,0,0.9)] rounded-[32px]">
+              {/* Glowing conic gradient border */}
+              <div className="card-glow" style={{ borderRadius: '32px' }} />
 
-              {/* AnimatePresence ensures only ONE screen renders at a time with a smooth
-                  crossfade — prevents double-screen ghosting seen previously */}
-              <div className="w-full h-full rounded-[26px] overflow-hidden relative">
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={mobileScreenIdx}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.45, ease: 'easeInOut' }}
-                    className="absolute inset-0"
-                  >
-                    {mobileScreenIdx === 0 && <HomeScreenContent />}
-                    {mobileScreenIdx === 1 && <CameraCard />}
-                    {mobileScreenIdx === 2 && <AICard />}
-                    {mobileScreenIdx === 3 && <HealthCard />}
-                    {mobileScreenIdx === 4 && <MusicCard />}
-                    {mobileScreenIdx === 5 && <WalletCard />}
-                  </motion.div>
-                </AnimatePresence>
+              {/* Inner bezel chassis container */}
+              <div className="absolute inset-[2.5px] rounded-[30px] bg-black z-10 flex items-center justify-center p-2">
+                {/* volume keys */}
+                <div className="absolute -left-[3px] top-[26%] w-[3px] h-8 bg-white/20 rounded-l" />
+                <div className="absolute -right-[3px] top-[30%] w-[3px] h-10 bg-white/20 rounded-r" />
+                <div className="absolute top-[10px] w-10 h-3 bg-black rounded-full z-50 border border-white/10" />
+
+                {/* AnimatePresence ensures only ONE screen renders at a time with a smooth
+                    crossfade — prevents double-screen ghosting seen previously */}
+                <div className="w-full h-full rounded-[24px] overflow-hidden relative">
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={mobileScreenIdx}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.45, ease: 'easeInOut' }}
+                      className="absolute inset-0"
+                    >
+                      {mobileScreenIdx === 0 && <HomeScreenContent />}
+                      {mobileScreenIdx === 1 && <CameraCard />}
+                      {mobileScreenIdx === 2 && <AICard />}
+                      {mobileScreenIdx === 3 && <HealthCard />}
+                      {mobileScreenIdx === 4 && <WalletCard />}
+                      {mobileScreenIdx === 5 && <MusicCard />}
+                      {mobileScreenIdx === 6 && <MapsCard />}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
@@ -849,7 +918,7 @@ export default function NovaOSShowcase() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center"
+                    className="p-4 bg-white/5 border border-[#1a6bff]/20 rounded-2xl text-center"
                   >
                     <h4 className="text-[#1a6bff] text-xs font-mono font-bold tracking-[2px] mb-1">200MP PROVISION</h4>
                     <p className="text-white/70 text-[10px] uppercase tracking-wider font-light">Captures light invisible to the human eye</p>
@@ -861,9 +930,9 @@ export default function NovaOSShowcase() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center"
+                    className="p-4 bg-white/5 border border-[#7c3aed]/20 rounded-2xl text-center"
                   >
-                    <h4 className="text-[#1a6bff] text-xs font-mono font-bold tracking-[2px] mb-1">NOVA MIND AI</h4>
+                    <h4 className="text-[#7c3aed] text-xs font-mono font-bold tracking-[2px] mb-1">NOVA MIND AI</h4>
                     <p className="text-white/70 text-[10px] uppercase tracking-wider font-light">Processes 40 trillion operations per second</p>
                   </motion.div>
                 )}
@@ -881,26 +950,38 @@ export default function NovaOSShowcase() {
                 )}
                 {mobileScreenIdx === 4 && (
                   <motion.div
-                    key="music"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center"
-                  >
-                    <h4 className="text-[#1a6bff] text-xs font-mono font-bold tracking-[2px] mb-1">SPATIAL AUDIO</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-wider font-light">24-bit lossless, every frequency perfectly placed</p>
-                  </motion.div>
-                )}
-                {mobileScreenIdx === 5 && (
-                  <motion.div
                     key="pay"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="p-4 bg-white/5 border border-white/10 rounded-2xl text-center"
+                    className="p-4 bg-white/5 border border-[#10b981]/20 rounded-2xl text-center"
                   >
-                    <h4 className="text-[#1a6bff] text-xs font-mono font-bold tracking-[2px] mb-1">NOVA PAY</h4>
+                    <h4 className="text-[#10b981] text-xs font-mono font-bold tracking-[2px] mb-1">NOVA PAY</h4>
                     <p className="text-white/70 text-[10px] uppercase tracking-wider font-light">Military-grade encryption. One tap checkout.</p>
+                  </motion.div>
+                )}
+                {mobileScreenIdx === 5 && (
+                  <motion.div
+                    key="music"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="p-4 bg-white/5 border border-[#a855f7]/20 rounded-2xl text-center"
+                  >
+                    <h4 className="text-[#a855f7] text-xs font-mono font-bold tracking-[2px] mb-1">SPATIAL AUDIO</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-wider font-light">24-bit lossless, every frequency perfectly placed</p>
+                  </motion.div>
+                )}
+                {mobileScreenIdx === 6 && (
+                  <motion.div
+                    key="maps"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="p-4 bg-white/5 border border-[#06b6d4]/20 rounded-2xl text-center"
+                  >
+                    <h4 className="text-[#06b6d4] text-xs font-mono font-bold tracking-[2px] mb-1">NOVA NAVIGATE</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-wider font-light">Direct satellite telemetry mapping with centimeter-level precision routing</p>
                   </motion.div>
                 )}
                 {mobileScreenIdx === 0 && (
@@ -971,7 +1052,11 @@ export default function NovaOSShowcase() {
         {/* ── ACT 3 FEATURE CALLOUTS (BESIDE PHONE) ── */}
         {/* Left Side Callout 1 (Camera) */}
         <motion.div
-          style={{ opacity: callout1Opacity, x: callout1X }}
+          animate={{
+            opacity: activeCalloutIdx === 1 ? 1 : 0,
+            x: activeCalloutIdx === 1 ? 0 : -30,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="absolute top-[calc(50%+50px)] -translate-y-1/2 left-[calc(50%-230px)] md:left-[calc(50%-340px)] w-[160px] md:w-[220px] z-[48] pointer-events-none select-none text-left"
         >
           <span className="text-[9px] font-mono tracking-[4px] text-[#1a6bff] uppercase font-bold block mb-1">
@@ -987,7 +1072,11 @@ export default function NovaOSShowcase() {
 
         {/* Right Side Callout 2 (AI Assistant) */}
         <motion.div
-          style={{ opacity: callout2Opacity, x: callout2X }}
+          animate={{
+            opacity: activeCalloutIdx === 2 ? 1 : 0,
+            x: activeCalloutIdx === 2 ? 0 : 30,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="absolute top-[calc(50%+50px)] -translate-y-1/2 right-[calc(50%-230px)] md:right-[calc(50%-340px)] w-[160px] md:w-[220px] z-[48] pointer-events-none select-none text-right"
         >
           <span className="text-[9px] font-mono tracking-[4px] text-[#7c3aed] uppercase font-bold block mb-1">
@@ -1001,25 +1090,33 @@ export default function NovaOSShowcase() {
           </p>
         </motion.div>
 
-        {/* Left Side Callout 3 (Music Player) */}
+        {/* Left Side Callout 3 (BioCore Health) */}
         <motion.div
-          style={{ opacity: callout3Opacity, x: callout3X }}
+          animate={{
+            opacity: activeCalloutIdx === 3 ? 1 : 0,
+            x: activeCalloutIdx === 3 ? 0 : -30,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="absolute top-[calc(50%+50px)] -translate-y-1/2 left-[calc(50%-230px)] md:left-[calc(50%-340px)] w-[160px] md:w-[220px] z-[48] pointer-events-none select-none text-left"
         >
-          <span className="text-[9px] font-mono tracking-[4px] text-purple-400 uppercase font-bold block mb-1">
-            [ ACOUSTIC CORE ]
+          <span className="text-[9px] font-mono tracking-[4px] text-[#ff3366] uppercase font-bold block mb-1">
+            [ BIOMETRIC CORE ]
           </span>
           <h3 className="text-lg md:text-2xl font-display font-extrabold uppercase leading-none tracking-tight text-white mb-2">
-            SPATIAL AUDIO
+            BIOCORE HEALTH
           </h3>
           <p className="text-white/60 font-sans text-[10px] md:text-xs tracking-wider leading-relaxed">
-            24-bit lossless playback with holographic 3D frequency placement.
+            Real-time health telemetry with 24/7 continuous clinical-grade ECG mapping.
           </p>
         </motion.div>
 
         {/* Right Side Callout 4 (Nova Pay) */}
         <motion.div
-          style={{ opacity: callout4Opacity, x: callout4X }}
+          animate={{
+            opacity: activeCalloutIdx === 4 ? 1 : 0,
+            x: activeCalloutIdx === 4 ? 0 : 30,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
           className="absolute top-[calc(50%+50px)] -translate-y-1/2 right-[calc(50%-230px)] md:right-[calc(50%-340px)] w-[160px] md:w-[220px] z-[48] pointer-events-none select-none text-right"
         >
           <span className="text-[9px] font-mono tracking-[4px] text-emerald-400 uppercase font-bold block mb-1">
@@ -1029,7 +1126,47 @@ export default function NovaOSShowcase() {
             NOVA PAY
           </h3>
           <p className="text-white/60 font-sans text-[10px] md:text-xs tracking-wider leading-relaxed">
-            Military-grade bio-encryption for one-tap checkout.
+            Military-grade bio-encryption for one-tap secure global checkout.
+          </p>
+        </motion.div>
+
+        {/* Left Side Callout 5 (Music / SoundSpace) */}
+        <motion.div
+          animate={{
+            opacity: activeCalloutIdx === 5 ? 1 : 0,
+            x: activeCalloutIdx === 5 ? 0 : -30,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="absolute top-[calc(50%+50px)] -translate-y-1/2 left-[calc(50%-230px)] md:left-[calc(50%-340px)] w-[160px] md:w-[220px] z-[48] pointer-events-none select-none text-left"
+        >
+          <span className="text-[9px] font-mono tracking-[4px] text-purple-400 uppercase font-bold block mb-1">
+            [ ACOUSTIC CORE ]
+          </span>
+          <h3 className="text-lg md:text-2xl font-display font-extrabold uppercase leading-none tracking-tight text-white mb-2">
+            SOUNDSPACE
+          </h3>
+          <p className="text-white/60 font-sans text-[10px] md:text-xs tracking-wider leading-relaxed">
+            24-bit lossless playback with holographic 3D frequency placement.
+          </p>
+        </motion.div>
+
+        {/* Right Side Callout 6 (Nova Navigate) */}
+        <motion.div
+          animate={{
+            opacity: activeCalloutIdx === 6 ? 1 : 0,
+            x: activeCalloutIdx === 6 ? 0 : 30,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className="absolute top-[calc(50%+50px)] -translate-y-1/2 right-[calc(50%-230px)] md:right-[calc(50%-340px)] w-[160px] md:w-[220px] z-[48] pointer-events-none select-none text-right"
+        >
+          <span className="text-[9px] font-mono tracking-[4px] text-cyan-400 uppercase font-bold block mb-1">
+            [ NAVIGATION CORE ]
+          </span>
+          <h3 className="text-lg md:text-2xl font-display font-extrabold uppercase leading-none tracking-tight text-white mb-2">
+            NOVA NAVIGATE
+          </h3>
+          <p className="text-white/60 font-sans text-[10px] md:text-xs tracking-wider leading-relaxed">
+            Direct satellite telemetry mapping with centimeter-level precision routing.
           </p>
         </motion.div>
 
@@ -1081,7 +1218,7 @@ export default function NovaOSShowcase() {
                             className="absolute top-0 left-0 w-full flex flex-col"
                             style={{
                               y: phoneContentY,
-                              height: isTablet ? '2370px' : '2770px', // 5 screens: Home, Camera, AI, Music, Pay
+                              height: isTablet ? '3318px' : '3878px', // 7 screens: Home, Camera, AI, Health, Pay, Music, Maps
                             }}
                           >
                             {/* Screen 1: Home Screen */}
@@ -1096,13 +1233,21 @@ export default function NovaOSShowcase() {
                             <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
                               <AICard />
                             </div>
-                            {/* Screen 4: Music Player */}
+                            {/* Screen 4: BioCore Health */}
                             <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <MusicCard />
+                              <HealthCard />
                             </div>
                             {/* Screen 5: NOVA Pay */}
                             <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
                               <WalletCard />
+                            </div>
+                            {/* Screen 6: Music Player / SoundSpace */}
+                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
+                              <MusicCard />
+                            </div>
+                            {/* Screen 7: NOVA Navigate */}
+                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
+                              <MapsCard />
                             </div>
                           </motion.div>
                         </div>
@@ -1117,7 +1262,7 @@ export default function NovaOSShowcase() {
                     className="w-full h-full absolute inset-0 z-0"
                     style={isMainCard ? { opacity: cardOriginalOpacity2 } : {}}
                   >
-                    {card.ui}
+                    {(!isMainCard || activeCalloutIdx === -1) ? card.ui : null}
                   </motion.div>
 
                   {/* Depth-of-field dim overlay for side cards: darkens when spread, clears when converged.

@@ -30,6 +30,7 @@ import PhoneRotator from './components/sections/PhoneRotator';
 import SpeedBenchmark from './components/sections/SpeedBenchmark';
 import Specs from './components/sections/Specs';
 import Colors from './components/sections/Colors';
+// import GamingSeries from './components/sections/GamingSeries';
 import PreorderCountdown from './components/sections/PreorderCountdown';
 import PressMarquee from './components/sections/PressMarquee';
 import Testimonials from './components/sections/Testimonials';
@@ -112,6 +113,7 @@ export default function App() {
         <SpeedBenchmark />
         <Specs />
         <Colors />
+        {/* <GamingSeries /> */}
         <PreorderCountdown />
         <PressMarquee />
         <Testimonials />

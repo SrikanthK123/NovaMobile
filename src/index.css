@@ -134,3 +134,17 @@ html.lenis {
 @keyframes rotateBorder {
   to { --angle: 360deg; }
 }
+
+/* Nova Gaming Section — product image crosshair cursor */
+.cursor-crosshair {
+  cursor: crosshair;
+}
+
+/* Nova Gaming Section — scrollbar hidden inside sticky viewport */
+#nova-gaming .sticky-viewport {
+  scrollbar-width: none;
+}
+#nova-gaming .sticky-viewport::-webkit-scrollbar {
+  display: none;
+}
+

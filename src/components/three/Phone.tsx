@@ -436,7 +436,47 @@ const Phone = forwardRef<THREE.Group, PhoneProps>(({ color = "#0d0d14", scrollPr
             </mesh>
           </group>
 
-          {/* === BACKSIDE PLAIN FINISH (no logo/text on rear) === */}
+          {/* === BACKSIDE NOVA BRAND TEXT === */}
+          {/* "NOVA" etched into back glass — below the camera island */}
+          <group position={[0, -0.9, -0.112]} rotation={[0, Math.PI, 0]}>
+            {/* Outer soft-glow shadow layer */}
+            <Text
+              fontSize={0.22}
+              color="#8ab4ff"
+              anchorX="center"
+              anchorY="middle"
+              letterSpacing={0.45}
+              fillOpacity={0.08}
+              outlineWidth={0.012}
+              outlineColor="#aaccff"
+              outlineOpacity={0.12}
+            >
+              NOVA
+            </Text>
+            {/* Primary crisp text layer */}
+            <Text
+              fontSize={0.22}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+              letterSpacing={0.45}
+              fillOpacity={0.55}
+            >
+              NOVA
+            </Text>
+            {/* Tagline below */}
+            <Text
+              fontSize={0.045}
+              color="#ffffff"
+              anchorX="center"
+              anchorY="middle"
+              position={[0, -0.18, 0.001]}
+              letterSpacing={0.35}
+              fillOpacity={0.28}
+            >
+              BEYOND PERCEPTION
+            </Text>
+          </group>
         </group>
       </group>
     </group>
