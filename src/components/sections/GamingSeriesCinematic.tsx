@@ -985,7 +985,7 @@ export default function GamingSeriesCinematic() {
   const p1Opacity = useTransform(scrollYProgress, [0.11, 0.15, 0.30, 0.38], [0, 1, 1, 0]);
   const p2Opacity = useTransform(scrollYProgress, [0.30, 0.38, 0.50, 0.58], [0, 1, 1, 0]);
   const p3Opacity = useTransform(scrollYProgress, [0.50, 0.58, 0.68, 0.76], [0, 1, 1, 0]);
-  const ctaOpacity = useTransform(scrollYProgress, [0.68, 0.76, 0.95, 0.98], [0, 1, 1, 0]);
+  const ctaOpacity = useTransform(scrollYProgress, [0.68, 0.72, 0.95, 0.98], [0, 1, 1, 0]);
 
   // -- 2. PRODUCT 1 — NOVA TRIGGER PRO (scroll 12% → 38%) --
   const p1NumeralY = useTransform(scrollYProgress, [0.12, 0.38], ["-50%", "-60%"]);
@@ -1091,28 +1091,28 @@ export default function GamingSeriesCinematic() {
   const p3ButtonsOp = useTransform(scrollYProgress, [0.565, 0.585], [0, 1]);
 
   // -- 5. COUNTDOWN SCENE — "GEAR UP" (scroll 68% → 100%) --
-  const gearClip = useTransform(scrollYProgress, [0.68, 0.71], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
-  const gearOp = useTransform(scrollYProgress, [0.68, 0.71], [0, 1]);
-  const upClip = useTransform(scrollYProgress, [0.69, 0.72], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
-  const upOp = useTransform(scrollYProgress, [0.69, 0.72], [0, 1]);
-  const ctaSubtextOp = useTransform(scrollYProgress, [0.70, 0.73], [0, 1]);
+  const gearClip = useTransform(scrollYProgress, [0.68, 0.70], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
+  const gearOp = useTransform(scrollYProgress, [0.68, 0.70], [0, 1]);
+  const upClip = useTransform(scrollYProgress, [0.69, 0.71], ["inset(0% 0% 100% 0%)", "inset(0% 0% 0% 0%)"]);
+  const upOp = useTransform(scrollYProgress, [0.69, 0.71], [0, 1]);
+  const ctaSubtextOp = useTransform(scrollYProgress, [0.70, 0.72], [0, 1]);
 
   // Product recap cards
-  const card1Y = useTransform(scrollYProgress, [0.71, 0.74], [40, 0]);
-  const card1Op = useTransform(scrollYProgress, [0.71, 0.74], [0, 1]);
-  const card2Y = useTransform(scrollYProgress, [0.72, 0.75], [40, 0]);
-  const card2Op = useTransform(scrollYProgress, [0.72, 0.75], [0, 1]);
-  const card3Y = useTransform(scrollYProgress, [0.73, 0.76], [40, 0]);
-  const card3Op = useTransform(scrollYProgress, [0.73, 0.76], [0, 1]);
+  const card1Y = useTransform(scrollYProgress, [0.70, 0.72], [30, 0]);
+  const card1Op = useTransform(scrollYProgress, [0.70, 0.72], [0, 1]);
+  const card2Y = useTransform(scrollYProgress, [0.705, 0.725], [30, 0]);
+  const card2Op = useTransform(scrollYProgress, [0.705, 0.725], [0, 1]);
+  const card3Y = useTransform(scrollYProgress, [0.71, 0.73], [30, 0]);
+  const card3Op = useTransform(scrollYProgress, [0.71, 0.73], [0, 1]);
 
   // Launch date Display block
-  const dateBlockOp = useTransform(scrollYProgress, [0.74, 0.77], [0, 1]);
+  const dateBlockOp = useTransform(scrollYProgress, [0.72, 0.74], [0, 1]);
 
   // Countdown timer
-  const liveCountdownOp = useTransform(scrollYProgress, [0.75, 0.78], [0, 1]);
+  const liveCountdownOp = useTransform(scrollYProgress, [0.73, 0.75], [0, 1]);
 
   // Waitlist form
-  const waitlistFormOp = useTransform(scrollYProgress, [0.76, 0.79], [0, 1]);
+  const waitlistFormOp = useTransform(scrollYProgress, [0.74, 0.76], [0, 1]);
 
   // Countdown Content Exit (going into final outro curtain)
   const ctaContentY = useTransform(scrollYProgress, [0.95, 0.98], [0, -30]);
@@ -2033,7 +2033,7 @@ export default function GamingSeriesCinematic() {
 
               {/* Subheadline description */}
               <motion.p
-                className="gaming-font-sans text-[14px] sm:text-lg text-white/70 max-w-lg leading-relaxed select-none mb-12"
+                className="gaming-font-sans text-[14px] sm:text-lg text-white max-w-lg leading-relaxed select-none mb-12"
                 style={{ opacity: ctaSubtextOp }}
               >
                 The NOVA Gaming Series drops 2026. <br />Engineered for raw competitive dominance.
@@ -2047,10 +2047,10 @@ export default function GamingSeriesCinematic() {
                 {/* Card 1: Triggers */}
                 <motion.div
                   onClick={() => handleDotClick(0)}
-                  className="w-[140px] sm:w-[180px] aspect-[3/4] border border-white/[0.08] bg-white/[0.02] rounded-3xl p-4 flex flex-col items-center justify-between cursor-pointer select-none backdrop-blur-md transition-all duration-350 hover:border-[#1a6bff]/40 hover:scale-104 hover:shadow-[0_20px_60px_rgba(26,107,255,0.15)] group active:scale-[0.97]"
+                  className="w-[140px] sm:w-[180px] aspect-[3/4] border border-white/[0.15] bg-white/[0.05] rounded-3xl p-4 flex flex-col items-center justify-between cursor-pointer select-none backdrop-blur-md transition-all duration-350 hover:border-[#1a6bff]/60 hover:scale-104 hover:shadow-[0_20px_60px_rgba(26,107,255,0.25)] group active:scale-[0.97]"
                   style={{ y: card1Y, opacity: card1Op }}
                 >
-                  <img src={p1Image} alt="Triggers" className="w-[80%] h-[70%] object-contain transition-transform duration-350 group-hover:scale-108" />
+                  <img src={p1Image} alt="Triggers" className="w-[80%] h-[70%] object-contain transition-transform duration-350 group-hover:scale-108 drop-shadow-[0_0_15px_rgba(26,107,255,0.25)]" />
                   <div className="w-full text-center mt-3">
                     <h5 className="gaming-font-sans text-[11px] font-semibold text-white tracking-[2px] uppercase">TRIGGER PRO</h5>
                     <span className="gaming-font-sans text-[9px] tracking-[1.5px] text-[#1a6bff] font-bold">Q1 2026</span>
@@ -2060,26 +2060,26 @@ export default function GamingSeriesCinematic() {
                 {/* Card 2: Cooler */}
                 <motion.div
                   onClick={() => handleDotClick(1)}
-                  className="w-[140px] sm:w-[180px] aspect-[3/4] border border-white/[0.08] bg-white/[0.02] rounded-3xl p-4 flex flex-col items-center justify-between cursor-pointer select-none backdrop-blur-md transition-all duration-350 hover:border-[#1a6bff]/40 hover:scale-104 hover:shadow-[0_20px_60px_rgba(26,107,255,0.15)] group active:scale-[0.97]"
+                  className="w-[140px] sm:w-[180px] aspect-[3/4] border border-white/[0.15] bg-white/[0.05] rounded-3xl p-4 flex flex-col items-center justify-between cursor-pointer select-none backdrop-blur-md transition-all duration-350 hover:border-[#00f0ff]/60 hover:scale-104 hover:shadow-[0_20px_60px_rgba(0,240,255,0.25)] group active:scale-[0.97]"
                   style={{ y: card2Y, opacity: card2Op }}
                 >
-                  <img src={p2Image} alt="Cooler" className="w-[80%] h-[70%] object-contain transition-transform duration-350 group-hover:scale-108" />
+                  <img src={p2Image} alt="Cooler" className="w-[80%] h-[70%] object-contain transition-transform duration-350 group-hover:scale-108 drop-shadow-[0_0_15px_rgba(0,240,255,0.25)]" />
                   <div className="w-full text-center mt-3">
                     <h5 className="gaming-font-sans text-[11px] font-semibold text-white tracking-[2px] uppercase">COOLER X1</h5>
-                    <span className="gaming-font-sans text-[9px] tracking-[1.5px] text-[#1a6bff] font-bold">Q2 2026</span>
+                    <span className="gaming-font-sans text-[9px] tracking-[1.5px] text-[#00f0ff] font-bold font-semibold">Q2 2026</span>
                   </div>
                 </motion.div>
 
                 {/* Card 3: Earbuds */}
                 <motion.div
                   onClick={() => handleDotClick(2)}
-                  className="w-[140px] sm:w-[180px] aspect-[3/4] border border-white/[0.08] bg-white/[0.02] rounded-3xl p-4 flex flex-col items-center justify-between cursor-pointer select-none backdrop-blur-md transition-all duration-350 hover:border-[#1a6bff]/40 hover:scale-104 hover:shadow-[0_20px_60px_rgba(26,107,255,0.15)] group active:scale-[0.97]"
+                  className="w-[140px] sm:w-[180px] aspect-[3/4] border border-white/[0.15] bg-white/[0.05] rounded-3xl p-4 flex flex-col items-center justify-between cursor-pointer select-none backdrop-blur-md transition-all duration-350 hover:border-[#8b5cf6]/60 hover:scale-104 hover:shadow-[0_20px_60px_rgba(139,92,246,0.25)] group active:scale-[0.97]"
                   style={{ y: card3Y, opacity: card3Op }}
                 >
-                  <img src={p3Image} alt="Earbuds" className="w-[80%] h-[70%] object-contain transition-transform duration-350 group-hover:scale-108" />
+                  <img src={p3Image} alt="Earbuds" className="w-[80%] h-[70%] object-contain transition-transform duration-350 group-hover:scale-108 drop-shadow-[0_0_15px_rgba(139,92,246,0.25)]" />
                   <div className="w-full text-center mt-3">
                     <h5 className="gaming-font-sans text-[11px] font-semibold text-white tracking-[2px] uppercase">SOUNDPRO X</h5>
-                    <span className="gaming-font-sans text-[9px] tracking-[1.5px] text-[#1a6bff] font-bold">Q3 2026</span>
+                    <span className="gaming-font-sans text-[9px] tracking-[1.5px] text-[#8b5cf6] font-bold font-semibold">Q3 2026</span>
                   </div>
                 </motion.div>
               </div>
