@@ -134,6 +134,8 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
   }, [active]);
 
   useEffect(() => {
+    if (!active) return;
+
     const ctx = gsap.context(() => {
       /* ── master timeline scrubbed to section scroll ── */
       const tl = gsap.timeline({
@@ -161,39 +163,55 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
          • Tags, lock UI, NOVA title fade to 0
          • Wallpaper brightens
        ═══════════════════════════════════════════════════════════ */
-      tl.to(phoneRef.current, {
-        rotationZ: -90,
-        scale:     1.15,
-        transformOrigin: "center center",
-        duration:  0.35,
-        ease:      'none',
-      }, 0.30);
+      tl.fromTo(phoneRef.current,
+        { rotationZ: 0, scale: 1.0 },
+        {
+          rotationZ: -90,
+          scale:     1.15,
+          transformOrigin: "center center",
+          duration:  0.35,
+          ease:      'none',
+        },
+        0.30
+      );
 
-      tl.to([tagsRef.current, lockRef.current, titleRef.current, btnRef.current], {
-        opacity:  0,
-        y:       -30,
-        duration: 0.20,
-        ease:    'none',
-        stagger:  0.03,
-      }, 0.30);
+      tl.fromTo([tagsRef.current, lockRef.current, titleRef.current, btnRef.current],
+        { opacity: 1, y: 0, display: '' },
+        {
+          opacity:  0,
+          y:       -30,
+          duration: 0.20,
+          ease:    'none',
+          stagger:  0.03,
+        },
+        0.30
+      );
 
       // Hide elements completely to prevent browser GPU rendering bugs
       tl.set([tagsRef.current, lockRef.current, titleRef.current, btnRef.current], {
         display: 'none'
       }, 0.50);
 
-      tl.to(wallRef.current, {
-        filter:   'brightness(1.6) saturate(1.3)',
-        duration: 0.35,
-        ease:     'none',
-      }, 0.30);
+      tl.fromTo(wallRef.current,
+        { filter: 'brightness(1) saturate(1)' },
+        {
+          filter:   'brightness(1.6) saturate(1.3)',
+          duration: 0.35,
+          ease:     'none',
+        },
+        0.30
+      );
 
       // HUD specs appear during landscape hold
-      tl.to(hudRef.current, {
-        opacity:  1,
-        duration: 0.10,
-        ease:     'none',
-      }, 0.56);
+      tl.fromTo(hudRef.current,
+        { opacity: 0 },
+        {
+          opacity:  1,
+          duration: 0.10,
+          ease:     'none',
+        },
+        0.56
+      );
 
       tl.to(hudRef.current, {
         opacity:  0,
@@ -209,18 +227,26 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
        ═══════════════════════════════════════════════════════════ */
 
       // Fade the bezel border so only the screen shows
-      tl.to(frameRef.current, {
-        opacity:      0,
-        duration:     0.18,
-        ease:         'none',
-      }, 0.65);
+      tl.fromTo(frameRef.current,
+        { opacity: 1, display: '' },
+        {
+          opacity:      0,
+          duration:     0.18,
+          ease:         'none',
+        },
+        0.65
+      );
 
       // Fade out mockup hardware details (selfie camera, home bar, grade gradients)
-      tl.to(hardwareRef.current, {
-        opacity:      0,
-        duration:     0.15,
-        ease:         'none',
-      }, 0.65);
+      tl.fromTo(hardwareRef.current,
+        { opacity: 1, display: '' },
+        {
+          opacity:      0,
+          duration:     0.15,
+          ease:         'none',
+        },
+        0.65
+      );
 
       // Hide bezel completely to prevent high-scale overflow and visual layout bugs
       tl.set(frameRef.current, {
@@ -233,71 +259,70 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
       }, 0.80);
 
       // Expand the wallpaper to fill viewport using scale + border-radius collapse
-      tl.to(screenRef.current, {
-        // At this point the screen div is inside a rotated 1.15x phone.
-        // We override its transform separately so it "pops" to fullscreen.
-        scale:        20,       // 20× a ~280px div = 5600px — covers any screen
-        borderRadius: 0,
-        duration:     0.35,
-        ease:         'power2.inOut',
-      }, 0.65);
+      tl.fromTo(screenRef.current,
+        { scale: 1, borderRadius: '49px' },
+        {
+          // At this point the screen div is inside a rotated 1.15x phone.
+          // We override its transform separately so it "pops" to fullscreen.
+          scale:        20,       // 20× a ~280px div = 5600px — covers any screen
+          borderRadius: 0,
+          duration:     0.35,
+          ease:         'power2.inOut',
+        },
+        0.65
+      );
 
       // Counter-scale the wallpaper so it stays crisp and doesn't get pixelated
       // Parent scales to 20x, so scaling child to 0.08x results in a beautiful, crisp 1.6x overall zoom.
-      tl.to(wallRef.current, {
-        scale:        0.08,
-        transformOrigin: "center center",
-        duration:     0.35,
-        ease:         'power2.inOut',
-      }, 0.65);
+      tl.fromTo(wallRef.current,
+        { scale: 1, opacity: 1 },
+        {
+          scale:        0.08,
+          opacity:      0,
+          transformOrigin: "center center",
+          duration:     0.35,
+          ease:         'power2.inOut',
+        },
+        0.65
+      );
 
       // Counter-scale the video so it stays crisp and matches the wallpaper
-      tl.to(videoRef.current, {
-        scale:        0.08,
-        transformOrigin: "center center",
-        duration:     0.35,
-        ease:         'power2.inOut',
-      }, 0.65);
+      tl.fromTo(videoRef.current,
+        { scale: 1, opacity: 0 },
+        {
+          scale:        0.08,
+          opacity:      1,
+          transformOrigin: "center center",
+          duration:     0.35,
+          ease:         'power2.inOut',
+        },
+        0.65
+      );
 
       // Counter-scale the video overlay so it stays crisp and matches the wallpaper
-      tl.to(videoOverlayRef.current, {
-        scale:        0.08,
-        transformOrigin: "center center",
-        duration:     0.35,
-        ease:         'power2.inOut',
-      }, 0.65);
-
-      // Fade in the video so it shows instead of the image when zoomed
-      tl.to(videoRef.current, {
-        opacity:      1,
-        duration:     0.25,
-        ease:         'power2.out',
-      }, 0.65);
-
-      // Fade out the static wallpaper when the video fades in
-      tl.to(wallRef.current, {
-        opacity:      0,
-        duration:     0.25,
-        ease:         'power2.out',
-      }, 0.65);
-
-      // Fade in the video overlay so it shows instead of the image when zoomed
-      tl.to(videoOverlayRef.current, {
-        opacity:      1,
-        duration:     0.25,
-        ease:         'power2.out',
-      }, 0.65);
-
-      // phoneRef is NOT faded out here so the wallpaper remains the full-screen background
-      // until the next section natively scrolls over it.
+      tl.fromTo(videoOverlayRef.current,
+        { scale: 1, opacity: 0 },
+        {
+          scale:        0.08,
+          opacity:      1,
+          transformOrigin: "center center",
+          duration:     0.35,
+          ease:         'power2.inOut',
+        },
+        0.65
+      );
 
       // Features text fades in over the fullscreen wallpaper
-      tl.to(featRef.current, {
-        opacity:  1,
-        y:        0,
-        duration: 0.12,
-        ease:     'power1.out',
-      }, 0.72);
+      tl.fromTo(featRef.current,
+        { opacity: 0, y: 30 },
+        {
+          opacity:  1,
+          y:        0,
+          duration: 0.12,
+          ease:     'power1.out',
+        },
+        0.72
+      );
 
       // Fade out "CRAFTED FOR THE FUTURE" text before Features section panels scroll up
       tl.to(featRef.current, {
@@ -322,7 +347,7 @@ export default function CSSPhone({ active = false }: { active?: boolean }) {
     }, wrapperRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [active]);
 
   return (
     /**

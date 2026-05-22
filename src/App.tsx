@@ -30,7 +30,8 @@ import PhoneRotator from './components/sections/PhoneRotator';
 import SpeedBenchmark from './components/sections/SpeedBenchmark';
 import Specs from './components/sections/Specs';
 import Colors from './components/sections/Colors';
-// import GamingSeries from './components/sections/GamingSeries';
+import ProductSplitShowcase from './components/sections/ProductSplitShowcase';
+import GamingSeriesCinematic from './components/sections/GamingSeriesCinematic';
 import PreorderCountdown from './components/sections/PreorderCountdown';
 import PressMarquee from './components/sections/PressMarquee';
 import Testimonials from './components/sections/Testimonials';
@@ -72,6 +73,8 @@ export default function App() {
       smoothWheel: true,
     });
 
+    (window as any).lenis = lenis;
+
     // Synchronize ScrollTrigger with Lenis updates
     lenis.on('scroll', ScrollTrigger.update);
 
@@ -87,6 +90,7 @@ export default function App() {
       lenis.off('scroll', ScrollTrigger.update);
       gsap.ticker.remove(update);
       lenis.destroy();
+      delete (window as any).lenis;
     };
   }, []);
 
@@ -113,8 +117,13 @@ export default function App() {
         <SpeedBenchmark />
         <Specs />
         <Colors />
-        {/* <GamingSeries /> */}
-        <PreorderCountdown />
+        <ProductSplitShowcase />
+        <div className="hidden md:block">
+          <GamingSeriesCinematic />
+        </div>
+        <div className="block md:hidden">
+          <PreorderCountdown />
+        </div>
         <PressMarquee />
         <Testimonials />
         <CTA />

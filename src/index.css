@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.cdnfonts.com/css/clash-display');
+@import url('https://fonts.cdnfonts.com/css/cabinet-grotesk');
 @import "tailwindcss";
 
 @theme {
@@ -8,6 +10,8 @@
   
   --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Syne", sans-serif;
+  --font-clash: "Clash Display", "Syne", sans-serif;
+  --font-cabinet: "Cabinet Grotesk", "Space Grotesk", sans-serif;
 }
 
 @layer base {

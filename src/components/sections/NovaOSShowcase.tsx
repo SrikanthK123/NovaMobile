@@ -516,6 +516,20 @@ const HomeScreenContent = () => {
 };
 
 // ── THE FULL APP SHOWCASE COMPONENT ──
+// Linear interpolation helper
+function interpolate(value: number, inputRange: number[], outputRange: number[]) {
+  if (value <= inputRange[0]) return outputRange[0];
+  if (value >= inputRange[inputRange.length - 1]) return outputRange[outputRange.length - 1];
+  
+  for (let i = 0; i < inputRange.length - 1; i++) {
+    if (value >= inputRange[i] && value <= inputRange[i+1]) {
+      const t = (value - inputRange[i]) / (inputRange[i+1] - inputRange[i]);
+      return outputRange[i] + (outputRange[i+1] - outputRange[i]) * t;
+    }
+  }
+  return outputRange[0];
+}
+
 export default function NovaOSShowcase() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const particleBurstRef = useRef<ParticleBurstRef>(null);
@@ -527,7 +541,10 @@ export default function NovaOSShowcase() {
   const [mobileScreenIdx, setMobileScreenIdx] = useState(0);
   const [activeCalloutIdx, setActiveCalloutIdx] = useState(-1);
 
-
+  const isTabletRef = useRef(isTablet);
+  useEffect(() => {
+    isTabletRef.current = isTablet;
+  }, [isTablet]);
 
   // Scroll bindings for desktop / tablet
   const { scrollYProgress } = useScroll({
@@ -540,7 +557,9 @@ export default function NovaOSShowcase() {
     const handleResize = () => {
       const w = window.innerWidth;
       setIsMobile(w < 768);
-      setIsTablet(w >= 768 && w < 1024);
+      const isTab = w >= 768 && w < 1024;
+      setIsTablet(isTab);
+      isTabletRef.current = isTab;
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -579,9 +598,10 @@ export default function NovaOSShowcase() {
   );
 
   // Inside phone scrolling mockup: Page scroll 65% -> 100% maps to Y offset inside phone screen
-  const phoneContentY = useTransform(
-    scrollYProgress,
-    [
+  // screenHeight = card phone height − 4px (inset-[2px] on each side)
+  const phoneContentY = useTransform(scrollYProgress, (progress) => {
+    const screenHeight = isTabletRef.current ? -376 : -456;
+    const input = [
       0.65, 0.67, // Home screen active (Screen 1)
       0.69, 0.72, // Camera mode active (Screen 2)
       0.74, 0.77, // AI Assistant active (Screen 3)
@@ -589,17 +609,18 @@ export default function NovaOSShowcase() {
       0.84, 0.87, // NOVA Pay active (Screen 5)
       0.89, 0.92, // Spatial Audio active (Screen 6)
       0.94, 1.00  // Nova Navigate active (Screen 7)
-    ],
-    [
+    ];
+    const output = [
       0, 0,
-      isTablet ? -474 : -554, isTablet ? -474 : -554,
-      isTablet ? -948 : -1108, isTablet ? -948 : -1108,
-      isTablet ? -1422 : -1662, isTablet ? -1422 : -1662,
-      isTablet ? -1896 : -2216, isTablet ? -1896 : -2216,
-      isTablet ? -2370 : -2770, isTablet ? -2370 : -2770,
-      isTablet ? -2844 : -3324, isTablet ? -2844 : -3324
-    ]
-  );
+      screenHeight, screenHeight,
+      screenHeight * 2, screenHeight * 2,
+      screenHeight * 3, screenHeight * 3,
+      screenHeight * 4, screenHeight * 4,
+      screenHeight * 5, screenHeight * 5,
+      screenHeight * 6, screenHeight * 6
+    ];
+    return interpolate(progress, input, output);
+  });
 
   // ── ACT 3 FEATURE CALLOUT TRANSFORMS ──
   // Callout 1 (Camera): Left Side
@@ -687,8 +708,30 @@ export default function NovaOSShowcase() {
   // ── DYNAMIC CARD ANIMATIONS (DECLARED AT TOP-LEVEL TO SATISFY RULES OF HOOKS) ──
   const willChangeTransform = useTransform(scrollYProgress, [0.0, 0.70, 1.0], ['transform', 'transform', 'auto']);
 
+  // Dynamic card size transforms
+  const mainCardWidth = useTransform(scrollYProgress, (progress) => {
+    const cW = isTabletRef.current ? 190 : 220;
+    const pW = isTabletRef.current ? 200 : 240; // Compact phone size
+    if (progress < 0.60) return `${cW}px`;
+    if (progress > 0.65) return `${pW}px`;
+    const t = (progress - 0.60) / 0.05;
+    return `${cW + (pW - cW) * t}px`;
+  });
+
+  const mainCardHeight = useTransform(scrollYProgress, (progress) => {
+    const cH = isTabletRef.current ? 380 : 440;
+    const pH = isTabletRef.current ? 380 : 460; // Compact phone size
+    if (progress < 0.60) return `${cH}px`;
+    if (progress > 0.65) return `${pH}px`;
+    const t = (progress - 0.60) / 0.05;
+    return `${cH + (pH - cH) * t}px`;
+  });
+
   // Card 0 (Camera)
-  const cardX0 = useTransform(scrollYProgress, [0.00, 0.30, 0.65, 1.00], [0, isTablet ? FAN_CONFIG[0].x * 0.6 : FAN_CONFIG[0].x, 0, 0]);
+  const cardX0 = useTransform(scrollYProgress, (progress) => {
+    const maxX = isTabletRef.current ? FAN_CONFIG[0].x * 0.6 : FAN_CONFIG[0].x;
+    return interpolate(progress, [0.00, 0.30, 0.65, 1.00], [0, maxX, 0, 0]);
+  });
   const cardY0 = useTransform(scrollYProgress, [0.00, 0.30, 0.65, 1.00], [0, FAN_CONFIG[0].y, 0, 0]);
   const cardRotY0 = useTransform(scrollYProgress, [0.00, 0.30, 0.65, 1.00], [0, FAN_CONFIG[0].rotY, 0, 0]);
   const cardRotZ0 = useTransform(scrollYProgress, [0.00, 0.30, 0.65, 1.00], [0, FAN_CONFIG[0].rotZ, 0, 0]);
@@ -696,7 +739,10 @@ export default function NovaOSShowcase() {
   const cardOpacity0 = useTransform(scrollYProgress, [0.00, 0.30, 0.60, 0.65, 1.00], [1, 1, 1, 0, 0]);
 
   // Card 1 (AI)
-  const cardX1 = useTransform(scrollYProgress, [0.01, 0.30, 0.65, 1.00], [0, isTablet ? FAN_CONFIG[1].x * 0.6 : FAN_CONFIG[1].x, 0, 0]);
+  const cardX1 = useTransform(scrollYProgress, (progress) => {
+    const maxX = isTabletRef.current ? FAN_CONFIG[1].x * 0.6 : FAN_CONFIG[1].x;
+    return interpolate(progress, [0.01, 0.30, 0.65, 1.00], [0, maxX, 0, 0]);
+  });
   const cardY1 = useTransform(scrollYProgress, [0.01, 0.30, 0.65, 1.00], [0, FAN_CONFIG[1].y, 0, 0]);
   const cardRotY1 = useTransform(scrollYProgress, [0.01, 0.30, 0.65, 1.00], [0, FAN_CONFIG[1].rotY, 0, 0]);
   const cardRotZ1 = useTransform(scrollYProgress, [0.01, 0.30, 0.65, 1.00], [0, FAN_CONFIG[1].rotZ, 0, 0]);
@@ -704,7 +750,10 @@ export default function NovaOSShowcase() {
   const cardOpacity1 = useTransform(scrollYProgress, [0.01, 0.30, 0.60, 0.65, 1.00], [1, 1, 1, 0, 0]);
 
   // Card 2 (Health - Main card)
-  const cardX2 = useTransform(scrollYProgress, [0.02, 0.30, 0.65, 1.00], [0, isTablet ? FAN_CONFIG[2].x * 0.6 : FAN_CONFIG[2].x, 0, 0]);
+  const cardX2 = useTransform(scrollYProgress, (progress) => {
+    const maxX = isTabletRef.current ? FAN_CONFIG[2].x * 0.6 : FAN_CONFIG[2].x;
+    return interpolate(progress, [0.02, 0.30, 0.65, 1.00], [0, maxX, 0, 0]);
+  });
   const cardY2 = useTransform(scrollYProgress, [0.02, 0.30, 0.65, 1.00], [0, FAN_CONFIG[2].y, 0, 0]);
   const cardRotY2 = useTransform(scrollYProgress, [0.02, 0.30, 0.65, 1.00], [0, FAN_CONFIG[2].rotY, 0, 0]);
   const cardRotZ2 = useTransform(scrollYProgress, [0.02, 0.30, 0.65, 1.00], [0, FAN_CONFIG[2].rotZ, 0, 0]);
@@ -714,7 +763,10 @@ export default function NovaOSShowcase() {
   const cardInnerBorderRadius2 = useTransform(scrollYProgress, [0.30, 0.60, 0.65], ['6px', '6px', '32px']);
 
   // Card 3 (Wallet)
-  const cardX3 = useTransform(scrollYProgress, [0.03, 0.30, 0.65, 1.00], [0, isTablet ? FAN_CONFIG[3].x * 0.6 : FAN_CONFIG[3].x, 0, 0]);
+  const cardX3 = useTransform(scrollYProgress, (progress) => {
+    const maxX = isTabletRef.current ? FAN_CONFIG[3].x * 0.6 : FAN_CONFIG[3].x;
+    return interpolate(progress, [0.03, 0.30, 0.65, 1.00], [0, maxX, 0, 0]);
+  });
   const cardY3 = useTransform(scrollYProgress, [0.03, 0.30, 0.65, 1.00], [0, FAN_CONFIG[3].y, 0, 0]);
   const cardRotY3 = useTransform(scrollYProgress, [0.03, 0.30, 0.65, 1.00], [0, FAN_CONFIG[3].rotY, 0, 0]);
   const cardRotZ3 = useTransform(scrollYProgress, [0.03, 0.30, 0.65, 1.00], [0, FAN_CONFIG[3].rotZ, 0, 0]);
@@ -722,7 +774,10 @@ export default function NovaOSShowcase() {
   const cardOpacity3 = useTransform(scrollYProgress, [0.03, 0.30, 0.60, 0.65, 1.00], [1, 1, 1, 0, 0]);
 
   // Card 4 (Music)
-  const cardX4 = useTransform(scrollYProgress, [0.04, 0.30, 0.65, 1.00], [0, isTablet ? FAN_CONFIG[4].x * 0.6 : FAN_CONFIG[4].x, 0, 0]);
+  const cardX4 = useTransform(scrollYProgress, (progress) => {
+    const maxX = isTabletRef.current ? FAN_CONFIG[4].x * 0.6 : FAN_CONFIG[4].x;
+    return interpolate(progress, [0.04, 0.30, 0.65, 1.00], [0, maxX, 0, 0]);
+  });
   const cardY4 = useTransform(scrollYProgress, [0.04, 0.30, 0.65, 1.00], [0, FAN_CONFIG[4].y, 0, 0]);
   const cardRotY4 = useTransform(scrollYProgress, [0.04, 0.30, 0.65, 1.00], [0, FAN_CONFIG[4].rotY, 0, 0]);
   const cardRotZ4 = useTransform(scrollYProgress, [0.04, 0.30, 0.65, 1.00], [0, FAN_CONFIG[4].rotZ, 0, 0]);
@@ -730,7 +785,10 @@ export default function NovaOSShowcase() {
   const cardOpacity4 = useTransform(scrollYProgress, [0.04, 0.30, 0.60, 0.65, 1.00], [1, 1, 1, 0, 0]);
 
   // Card 5 (Maps)
-  const cardX5 = useTransform(scrollYProgress, [0.05, 0.30, 0.65, 1.00], [0, isTablet ? FAN_CONFIG[5].x * 0.6 : FAN_CONFIG[5].x, 0, 0]);
+  const cardX5 = useTransform(scrollYProgress, (progress) => {
+    const maxX = isTabletRef.current ? FAN_CONFIG[5].x * 0.6 : FAN_CONFIG[5].x;
+    return interpolate(progress, [0.05, 0.30, 0.65, 1.00], [0, maxX, 0, 0]);
+  });
   const cardY5 = useTransform(scrollYProgress, [0.05, 0.30, 0.65, 1.00], [0, FAN_CONFIG[5].y, 0, 0]);
   const cardRotY5 = useTransform(scrollYProgress, [0.05, 0.30, 0.65, 1.00], [0, FAN_CONFIG[5].rotY, 0, 0]);
   const cardRotZ5 = useTransform(scrollYProgress, [0.05, 0.30, 0.65, 1.00], [0, FAN_CONFIG[5].rotZ, 0, 0]);
@@ -838,8 +896,8 @@ export default function NovaOSShowcase() {
   // Dimensions based on tablet/desktop sizes
   const cardWidth = isTablet ? '190px' : '220px';
   const cardHeight = isTablet ? '380px' : '440px';
-  const phoneWidth = isTablet ? '240px' : '280px';
-  const phoneHeight = isTablet ? '480px' : '560px';
+  const phoneWidth = isTablet ? '200px' : '240px';
+  const phoneHeight = isTablet ? '380px' : '460px';
 
   // ── RENDER MOBILE VIEW ──
   if (isMobile) {
@@ -1192,8 +1250,8 @@ export default function NovaOSShowcase() {
                 style={{
                   ...card.style,
                   borderRadius: isMainCard ? cardBorderRadius2 : '8px',
-                  width: cardWidth,
-                  height: cardHeight,
+                  width: isMainCard ? mainCardWidth : cardWidth,
+                  height: isMainCard ? mainCardHeight : cardHeight,
                   zIndex: isMainCard ? 30 : 20 - idx,
                 }}
               >
@@ -1208,51 +1266,42 @@ export default function NovaOSShowcase() {
                   className="absolute inset-[2px] overflow-hidden bg-black z-10"
                   style={{ borderRadius: isMainCard ? cardInnerBorderRadius2 : '6px' }}
                 >
-                  {/* For Card 3, inside Act 3 (scroll > 65%), we render the nested CSSPhoneFrame with internal scroll content! */}
+                  {/* Act 3 Phone Showcase — AnimatePresence approach.
+                      frameOpacity (scroll MotionValue) was stuck at 0 in certain viewport configs.
+                      activeCalloutIdx IS proven to work (it drives the sidebar callout text).
+                      Using it directly with AnimatePresence — identical to the working mobile view. */}
                   {isMainCard ? (
-                    <motion.div style={{ opacity: frameOpacity }} className="w-full h-full absolute inset-0 z-20">
-                      <CSSPhoneFrame width="100%" height="100%">
-                        {/* Internal scroll viewport container */}
-                        <div className="w-full h-full overflow-hidden relative">
-                          <motion.div
-                            className="absolute top-0 left-0 w-full flex flex-col"
-                            style={{
-                              y: phoneContentY,
-                              height: isTablet ? '3318px' : '3878px', // 7 screens: Home, Camera, AI, Health, Pay, Music, Maps
-                            }}
-                          >
-                            {/* Screen 1: Home Screen */}
-                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <HomeScreenContent />
+                    <AnimatePresence initial={false}>
+                      {activeCalloutIdx >= 0 && (
+                        <motion.div
+                          key={`phone-screen-${activeCalloutIdx}`}
+                          className="absolute inset-0 z-20 overflow-hidden"
+                          initial={{ opacity: 0, y: 35 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
+                          style={{ borderRadius: cardInnerBorderRadius2 }}
+                        >
+                          {/* Active screen content — keyed to activeCalloutIdx for crossfade */}
+                          {activeCalloutIdx === 0 && <HomeScreenContent />}
+                          {activeCalloutIdx === 1 && <CameraCard />}
+                          {activeCalloutIdx === 2 && <AICard />}
+                          {activeCalloutIdx === 3 && <HealthCard />}
+                          {activeCalloutIdx === 4 && <WalletCard />}
+                          {activeCalloutIdx === 5 && <MusicCard />}
+                          {activeCalloutIdx === 6 && <MapsCard />}
+
+                          {/* Phone hardware: selfie camera punch-hole */}
+                          <div className="absolute top-[8px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] rounded-full bg-black z-50 border border-white/10 flex items-center justify-center shadow-[inset_0_1px_2px_rgba(255,255,255,0.15)]">
+                            <div className="w-[4px] h-[4px] rounded-full bg-gradient-to-tr from-[#020e26] to-[#0d2a5c] border border-cyan-500/20 relative">
+                              <div className="absolute top-[0.5px] left-[0.5px] w-[0.8px] h-[0.8px] rounded-full bg-white/80" />
                             </div>
-                            {/* Screen 2: Camera Mode */}
-                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <CameraCard />
-                            </div>
-                            {/* Screen 3: AI Assistant */}
-                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <AICard />
-                            </div>
-                            {/* Screen 4: BioCore Health */}
-                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <HealthCard />
-                            </div>
-                            {/* Screen 5: NOVA Pay */}
-                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <WalletCard />
-                            </div>
-                            {/* Screen 6: Music Player / SoundSpace */}
-                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <MusicCard />
-                            </div>
-                            {/* Screen 7: NOVA Navigate */}
-                            <div style={{ height: isTablet ? '474px' : '554px' }} className="w-full shrink-0">
-                              <MapsCard />
-                            </div>
-                          </motion.div>
-                        </div>
-                      </CSSPhoneFrame>
-                    </motion.div>
+                          </div>
+                          {/* Subtle glass refraction — very low opacity, never hides content */}
+                          <div className="absolute inset-0 pointer-events-none z-30 bg-gradient-to-br from-indigo-500/4 via-transparent to-blue-500/6" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   ) : null}
 
                   {/* Original card UI shown during Act 1 and Act 2.
