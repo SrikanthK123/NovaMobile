@@ -4,6 +4,8 @@ import LeftProductBlock from '../gaming/LeftProductBlock';
 import RightStickyDisplay from '../gaming/RightStickyDisplay';
 import ProductInfoCard from '../gaming/ProductInfoCard';
 
+const baseUrl = import.meta.env.BASE_URL || "/";
+
 const PRODUCTS = [
   {
     index: 0,
@@ -11,7 +13,7 @@ const PRODUCTS = [
     category: 'GAMING PERIPHERAL',
     headline: ['TRIGGER', 'PRECISION.'],
     description: 'Dominate every match with sub-millisecond response times. CNC machined aerospace aluminum. Engineered for champions.',
-    image: '/images/NOVA GamingTrigger.png',
+    image: `${baseUrl}images/NOVA GamingTrigger.png`,
     launchQuarter: 'Q1 2026',
     bgColor: '#050508',
     specBadge: { value: '0.8ms', label: 'ACTUATION' },
@@ -46,7 +48,7 @@ const PRODUCTS = [
     category: 'THERMAL MANAGEMENT',
     headline: ['COOLING', 'PERFECTED.'],
     description: 'Kill the heat before it kills your game. Semiconductor cooling technology drops your phone temperature by 15°C instantly.',
-    image: '/images/NOVA-Coolfan.png',
+    image: `${baseUrl}images/NOVA-Coolfan.png`,
     launchQuarter: 'Q2 2026',
     bgColor: '#04040e',
     specBadge: { value: '−15°C', label: 'COOLING' },
@@ -81,7 +83,7 @@ const PRODUCTS = [
     category: 'AUDIO ENGINEERING',
     headline: ['SOUND', 'UNLEASHED.'],
     description: 'Hear every footstep. Every reload. Every spatial cue. 24-bit lossless audio processed by NOVA MIND AI in real-time.',
-    image: '/images/NOVA EarBuds.png',
+    image: `${baseUrl}images/NOVA EarBuds.png`,
     launchQuarter: 'Q3 2026',
     bgColor: '#060408',
     specBadge: { value: '28ms', label: 'LATENCY' },
@@ -278,7 +280,7 @@ export default function ProductSplitShowcase() {
             {/* Micro layout display showcasing Ecosystem Image */}
             <div className="w-full max-w-[480px] bg-white/[0.02] border border-white/5 rounded-2xl p-4 mb-6 md:mb-8 overflow-hidden flex flex-col md:flex-row gap-4 items-center">
               <img
-                src="/images/NewLaunchProducts.png"
+                src={`${baseUrl}images/NewLaunchProducts.png`}
                 alt="NOVA 2026 Gaming Gear Bundle Suite"
                 className="w-[140px] h-[100px] object-contain rounded-lg filter drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)] transition-transform duration-300 hover:scale-105"
               />
